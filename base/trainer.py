@@ -33,5 +33,6 @@ class Trainer:
             self.cfg.epochs, desc="Epoch: ",
             ncols=75
         )
-        for eopch in enumerate(loop):
+        for ep in enumerate(loop):
             self.model.train_epoch(self.dataloader)
+            self.current_ep += 1
