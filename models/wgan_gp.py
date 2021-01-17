@@ -6,10 +6,11 @@ from torch import autograd
 from base.model import BaseGAN
 from models.modules.net import NetG, NetD
 
+
 class WGAN_GP(BaseGAN):
     def __init__(self, cfg):
         super().__init__(cfg)
-        
+
         self.netG = NetG(self.cfg.z_dim, self.cfg.img_ch)
         self.netD = NetD(self.cfg.img_ch)
 
@@ -23,6 +24,13 @@ class WGAN_GP(BaseGAN):
 
         self.optG = Adam(self.netG.parameters(), lr=self.cfg.lr.g)
         self.optD = Adam(self.netD.parameters(), lr=self.cfg.lr.d)
+
+    def generate_images(self, n_samples):
+        self.netG.eval()
+        with torch.no_grad():
+            noise = self.sample_noise()[:n_samples]
+            fake_images = self.netG(noise)
+        return fake_images
 
     def generator_step(self, data):
         self.netG.train()
@@ -40,9 +48,9 @@ class WGAN_GP(BaseGAN):
 
         loss.backward()
         self.optG.step()
-        
+
         self.metrics["gen-loss"] += [loss.item()]
-    
+
     def critic_step(self, data):
         self.netG.eval()
         self.netD.train()
@@ -57,7 +65,9 @@ class WGAN_GP(BaseGAN):
         real_logits = self.netD(real_images)
         fake_logits = self.netD(fake_images)
 
-        gradient_penalty = self.cfg.w_gp * self._compute_gp(real_images, fake_images)
+        gradient_penalty = self.cfg.w_gp * self._compute_gp(
+            real_images, fake_images
+        )
         loss_c = fake_logits.mean() - real_logits.mean()
 
         loss = loss_c + gradient_penalty
@@ -67,7 +77,7 @@ class WGAN_GP(BaseGAN):
 
         self.metrics["critic-loss"] += [loss.item()]
         self.metrics["gp"] += [gradient_penalty.item()]
-    
+
     def _compute_gp(self, real_data, fake_data):
         batch_size = real_data.size(0)
         eps = torch.rand(batch_size, 1, 1, 1).to(real_data.device())
@@ -89,4 +99,3 @@ class WGAN_GP(BaseGAN):
         gradients = gradients.view(batch_size, -1)
         grad_norm = gradients.norm(2, 1)
         return torch.mean((grad_norm - 1) ** 2)
-
