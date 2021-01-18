@@ -8,8 +8,8 @@ from models.modules.net import NetG, NetD
 
 
 class WGAN_GP(BaseGAN):
-    def __init__(self, cfg):
-        super().__init__(cfg)
+    def __init__(self, cfg, writer):
+        super().__init__(cfg, writer)
 
         self.netG = NetG(self.cfg.z_dim, self.cfg.img_ch)
         self.netD = NetD(self.cfg.img_ch)

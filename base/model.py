@@ -5,9 +5,10 @@ from torchvision.utils import make_grid
 from tensorboardX import SummaryWriter
 
 from tqdm import tqdm
+import numpy as np
 
 
-class BaseGAN(nn.Module):
+class BaseGAN:
     def __init__(self, cfg, writer):
         """
         __init__ BaseGAN consturctor
@@ -23,26 +24,23 @@ class BaseGAN(nn.Module):
         self.train_step = 0
 
         self.__post_epoch_hooks = []
-    
+
     def _update_model_optimizers(self):
         pass
-    
+
     def generate_images(self, n_samples=16):
         raise NotImplementedError("method not implemented!")
 
     def generator_step(self, data):
         raise NotImplementedError("method not implemented!")
-    
+
     def critic_step(self, data):
         raise NotImplementedError("method not implemented!")
 
-    def  train_epoch(self, dataloader):
+    def train_epoch(self, dataloader):
         self.metrics = {}
-        
-        loop = tqdm(
-            dataloader, desc="Trg Itr: ",
-            ncols= 75, leave=False
-        )
+
+        loop = tqdm(dataloader, desc="Trg Itr: ", ncols=75, leave=False)
 
         for ix, data in enumerate(loop):
             self.critic_step(data)
@@ -53,16 +51,18 @@ class BaseGAN(nn.Module):
 
             if ix % self.cfg.viz_freq == 0:
                 self.vizualize_gen(dataloader, self.train_step)
-            
+
             self.train_step += 1
-        
+
         # * call the registered hooks
         for hook in self.__post_epoch_hooks:
             hook()
 
     def sample_noise(self):
-        return torch.randn(self.cfg.batch_size, self.cfg.z_dim, 1, 1).to(self.cfg.device)
-    
+        return torch.randn(self.cfg.batch_size, self.cfg.z_dim, 1, 1).to(
+            self.cfg.device
+        )
+
     def log_step_losses(self, metrics, step, train=True):
         ses = "train" if train else "val"
         for key in metrics:
@@ -84,8 +84,8 @@ class BaseGAN(nn.Module):
 
         grid = make_grid(fake_images, nrow=4, normalize=True)
         self.writer.add_image("fake-images", grid, step)
-        
+
         grid = make_grid(real_images, nrow=4, normalize=True)
         self.writer.add_image("real-images", grid, step)
-        
+
         return

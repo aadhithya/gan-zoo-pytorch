@@ -1,0 +1,15 @@
+name: WGAN-GP
+
+download: True
+
+seed: 42
+z_dim: 128
+
+imsize: 128
+img_ch: 3
+
+batch_size: 4
+epochs: 5
+lr:
+  g: 1.0e-4
+  c: 1.0e-4
