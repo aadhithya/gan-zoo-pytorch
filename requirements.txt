@@ -1,7 +1,9 @@
-colorlog==4.7.2
-torchvision==0.8.2
-tqdm==4.47.0
-torch==1.7.1
+tqdm==4.50.2
 munch==2.5.0
+torch==1.7.1
+torchvision==0.8.2
+numpy==1.19.2
+colorlog==4.7.2
 PyYAML==5.3.1
 tensorboardX==2.1
+typer==0.3.2
