@@ -1,4 +1,5 @@
 # pytorch-gan-zoo
+<img src="zoo.png" width=200></img>
 A zoo of GAN implementations.
 
 ## 0. Models
@@ -50,3 +51,6 @@ lr:
 - [ ] More Datasets
   - [ ] MNIST
   - [ ] CIFAR
+
+---
+<div>Icons made by <a href="https://flat-icons.com/" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
