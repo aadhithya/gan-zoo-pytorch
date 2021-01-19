@@ -1,5 +1,5 @@
 # pytorch-gan-zoo
-A zoo of GAN implementations
+A zoo of GAN implementations.
 
 ## 0. Models
 - [ ] DCGAN
