@@ -1,4 +1,4 @@
-# pytorch-gan-zoo
+# gan-zoo-pytorch
 
 <img src="zoo.png" width=200></img></br>
 
