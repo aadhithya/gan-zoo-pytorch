@@ -1,19 +1,23 @@
 name: WGAN-GP
-device: cuda
-data_dir: /home/ubuntu/pytorch-gan-zoo/.data/img_align_celeba
 
 seed: 42
-z_dim: 128
+device: cuda
 
+data_dir: /home/ubuntu/pytorch-gan-zoo/.data/img_align_celeba
+
+z_dim: 128
 imsize: 64
 img_ch: 3
 
 w_gp: 10
 n_critic: 5
 
-batch_size: 128
-epochs: 5
-viz_freq: 200
 lr:
   g: 1.0e-4
   d: 1.0e-4
+
+
+batch_size: 256
+epochs: 5
+viz_freq: 200
+ckpt_freq: 50

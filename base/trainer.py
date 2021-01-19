@@ -85,4 +85,11 @@ class Trainer:
         loop = trange(self.cfg.epochs, desc="Epoch: ", ncols=75)
         for ep in enumerate(loop):
             self.model.train_epoch(self.dataloader)
+
+            if (
+                self.cfg.ckpt_freq is not None
+                and (self.current_ep + 1) % self.cfg.ckpt_freq == 0
+            ):
+                self.model.save_model(self.ckpt_dir, self.current_ep)
+
             self.current_ep += 1

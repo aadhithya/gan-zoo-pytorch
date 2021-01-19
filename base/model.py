@@ -97,3 +97,17 @@ class BaseGAN:
         self.writer.add_image("real-images", grid, step)
 
         return
+
+    def save_model(self, ckpt_dir, current_ep):
+        pass
+
+    def _ckpt(self, model, path):
+        """
+        _ckpt makes checkpoint
+
+        Args:
+            model (nn.Module): module to save
+            path (str): save path
+        """
+        if isinstance(model, torch.nn.DataParallel):
+            torch.save(model.module.state_dict(), path)

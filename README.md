@@ -54,5 +54,3 @@ lr:
 - [ ] More Datasets
   - [ ] MNIST
   - [ ] CIFAR
-
-

@@ -3,6 +3,8 @@ import torch.nn as nn
 from torch.optim import Adam
 from torch import autograd
 
+import os
+
 from base.model import BaseGAN
 from models.modules.net import NetG, NetD
 from utils.utils import init_weight
@@ -109,3 +111,10 @@ class WGAN_GP(BaseGAN):
         gradients = gradients.view(batch_size, -1)
         grad_norm = gradients.norm(2, 1)
         return torch.mean((grad_norm - 1) ** 2)
+
+    def save_model(self, ckpt_dir: str, current_ep: int):
+        out_path = os.path.join(ckpt_dir, f"netG-{(current_ep+1):03d}.tar")
+        self._ckpt(self.netG, out_path)
+
+        out_path = os.path.join(ckpt_dir, f"netD-{(current_ep+1):03d}.tar")
+        self._ckpt(self.netD, out_path)
