@@ -60,6 +60,12 @@ class BaseGAN:
         for hook in self.__post_epoch_hooks:
             hook()
 
+    def _generator_loss(self, **kwargs):
+        pass
+
+    def _critic_loss(self, **kwargs):
+        pass
+
     def sample_noise(self):
         return torch.randn(self.cfg.batch_size, self.cfg.z_dim, 1, 1).to(
             self.cfg.device
