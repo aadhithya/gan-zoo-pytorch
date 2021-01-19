@@ -8,15 +8,14 @@ import os
 from base.model import BaseGAN
 from models.modules.net import NetG, NetD
 from utils.utils import init_weight
-from models.modules.layers import LayerNorm2d, PixelNorm
 
 
-class WGAN_GP(BaseGAN):
+class WGAN(BaseGAN):
     """
-    WGAN_GP Wasserstein GANs with Gradient Penalty.
-    Gets rid of gradient clipping from WGAN and uses
-    gradient clipping instead to enforce 1-Lipschitz
-    continuity. Everything else is the same as WGAN.
+    WGAN Wasserstein Generative Adversarial Network
+    Uses Wasserstein distance for training GAN and
+    gradient clipping to enforce 1-Lipschitz continuity.
+    http://proceedings.mlr.press/v70/arjovsky17a/arjovsky17a.pdf
     """
 
     def __init__(self, cfg, writer):
@@ -25,15 +24,16 @@ class WGAN_GP(BaseGAN):
         self.netG = NetG(
             z_dim=self.cfg.z_dim,
             out_ch=self.cfg.img_ch,
-            norm_layer=LayerNorm2d,
+            norm_layer=nn.BatchNorm2d,
             final_activation=torch.tanh,
         )
-        self.netD = NetD(self.cfg.img_ch, norm_layer=LayerNorm2d)
+        self.netD = NetD(self.cfg.img_ch, norm_layer=nn.BatchNorm2d)
 
         self.netG.apply(init_weight)
         self.netD.apply(init_weight)
 
         self.n_critic = self.cfg.n_critic
+        self.c = 0.01 if self.cfg.c is None else self.cfg.c
 
         self._update_model_optimizers()
 
@@ -77,37 +77,13 @@ class WGAN_GP(BaseGAN):
         real_logits = self.netD(real_images)
         fake_logits = self.netD(fake_images)
 
-        gradient_penalty = self.cfg.w_gp * self._compute_gp(
-            real_images, fake_images
-        )
-
-        loss_c = fake_logits.mean() - real_logits.mean()
-
-        loss = loss_c + gradient_penalty
+        loss = fake_logits.mean() - real_logits.mean()
 
         loss.backward()
         self.optD.step()
 
+        # * Gradient clippling
+        for p in self.netD.parameters():
+            p.data.clamp_(-self.c, self.c)
+
         self.metrics["critic-loss"] += [loss.item()]
-        self.metrics["gp"] += [gradient_penalty.item()]
-
-    def _compute_gp(self, real_data, fake_data):
-        batch_size = real_data.size(0)
-        eps = torch.rand(batch_size, 1, 1, 1).to(real_data.device)
-        eps = eps.expand_as(real_data)
-        interpolation = eps * real_data + (1 - eps) * fake_data
-
-        interp_logits = self.netD(interpolation)
-        grad_outputs = torch.ones_like(interp_logits)
-
-        gradients = autograd.grad(
-            outputs=interp_logits,
-            inputs=interpolation,
-            grad_outputs=grad_outputs,
-            create_graph=True,
-            retain_graph=True,
-        )[0]
-
-        gradients = gradients.view(batch_size, -1)
-        grad_norm = gradients.norm(2, 1)
-        return torch.mean((grad_norm - 1) ** 2)
