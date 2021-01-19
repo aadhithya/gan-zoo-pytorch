@@ -1,5 +1,9 @@
 # pytorch-gan-zoo
-<img src="zoo.png" width=200></img>
+
+<img src="zoo.png" width=200></img></br>
+
+
+
 A zoo of GAN implementations.
 
 ## 0. Models
