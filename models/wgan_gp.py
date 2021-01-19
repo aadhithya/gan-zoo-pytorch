@@ -18,7 +18,7 @@ class WGAN_GP(BaseGAN):
         self.netG = NetG(
             z_dim=self.cfg.z_dim,
             out_ch=self.cfg.img_ch,
-            norm_layer=nn.BatchNorm2d,
+            norm_layer=LayerNorm2d,
             final_activation=torch.tanh,
         )
         self.netD = NetD(self.cfg.img_ch, norm_layer=LayerNorm2d)
