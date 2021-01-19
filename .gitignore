@@ -135,3 +135,5 @@ wandb/
 .*/
 test.png
 .runid
+reset_runs.sh
+tensorboard.sh

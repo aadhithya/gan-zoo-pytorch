@@ -1,5 +1,6 @@
+from base.model import BaseGAN
 import torch
-from torchvision.datasets import CelebA
+from torchvision.datasets import ImageFolder
 from torch.utils.data.dataloader import DataLoader
 import torchvision.transforms as tf
 
@@ -15,7 +16,7 @@ from utils.log import log
 
 
 class Trainer:
-    def __init__(self, Model, cfg_path) -> None:
+    def __init__(self, Model: BaseGAN, cfg_path) -> None:
         super().__init__()
 
         self.__init_config(cfg_path)
@@ -28,18 +29,19 @@ class Trainer:
             [
                 tf.ToTensor(),
                 tf.Normalize(0.5, 0.5),
-                tf.Resize(self.cfg.imsize),
+                tf.Resize((self.cfg.imsize, self.cfg.imsize)),
             ]
         )
 
-        self.dataset = CelebA(
-            "./.temp", transform=transforms, download=self.cfg.download
+        self.dataset = ImageFolder(
+            root=self.cfg.data_dir, transform=transforms
         )
         self.dataloader = DataLoader(
             self.dataset,
             batch_size=self.cfg.batch_size,
             shuffle=True,
             num_workers=2,
+            drop_last=True,
         )
 
         self.model = Model(self.cfg, self.writer)
@@ -80,9 +82,6 @@ class Trainer:
         log.info("Seed Set...🥜")
 
     def train(self):
-        import pdb
-
-        pdb.set_trace()
         loop = trange(self.cfg.epochs, desc="Epoch: ", ncols=75)
         for ep in enumerate(loop):
             self.model.train_epoch(self.dataloader)

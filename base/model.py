@@ -6,6 +6,8 @@ from tensorboardX import SummaryWriter
 
 from tqdm import tqdm
 import numpy as np
+from collections import defaultdict
+from utils.log import log
 
 
 class BaseGAN:
@@ -20,7 +22,7 @@ class BaseGAN:
         self.cfg = cfg
         self.n_critic = 1 if self.cfg.n_critic is None else self.cfg.n_Critic
 
-        self.writer = SummaryWriter()
+        self.writer = writer
         self.train_step = 0
 
         self.__post_epoch_hooks = []
@@ -38,7 +40,7 @@ class BaseGAN:
         raise NotImplementedError("method not implemented!")
 
     def train_epoch(self, dataloader):
-        self.metrics = {}
+        self.metrics = defaultdict(list)
 
         loop = tqdm(dataloader, desc="Trg Itr: ", ncols=75, leave=False)
 
@@ -80,7 +82,7 @@ class BaseGAN:
     def vizualize_gen(self, dataloader, step, n_samples=16):
         n_samples = min(n_samples, self.cfg.batch_size)
         fake_images = self.generate_images(n_samples=n_samples)
-        real_images = iter(dataloader).next()[:n_samples]
+        real_images = iter(dataloader).next()[0][:n_samples]
 
         grid = make_grid(fake_images, nrow=4, normalize=True)
         self.writer.add_image("fake-images", grid, step)

@@ -5,16 +5,26 @@ from torch import autograd
 
 from base.model import BaseGAN
 from models.modules.net import NetG, NetD
+from utils.utils import init_weight
+from models.modules.layers import LayerNorm2d, PixelNorm
 
 
 class WGAN_GP(BaseGAN):
     def __init__(self, cfg, writer):
         super().__init__(cfg, writer)
 
-        self.netG = NetG(self.cfg.z_dim, self.cfg.img_ch)
-        self.netD = NetD(self.cfg.img_ch)
+        self.netG = NetG(
+            z_dim=self.cfg.z_dim,
+            out_ch=self.cfg.img_ch,
+            norm_layer=PixelNorm,
+            final_activation=torch.tanh,
+        )
+        self.netD = NetD(self.cfg.img_ch, norm_layer=LayerNorm2d)
 
-        self.n_critic = 5
+        self.netG.apply(init_weight)
+        self.netD.apply(init_weight)
+
+        self.n_critic = self.cfg.n_critic
 
         self._update_model_optimizers()
 
@@ -34,7 +44,7 @@ class WGAN_GP(BaseGAN):
 
     def generator_step(self, data):
         self.netG.train()
-        self.netD.eval
+        self.netD.eval()
 
         self.optG.zero_grad()
 
@@ -68,6 +78,7 @@ class WGAN_GP(BaseGAN):
         gradient_penalty = self.cfg.w_gp * self._compute_gp(
             real_images, fake_images
         )
+
         loss_c = fake_logits.mean() - real_logits.mean()
 
         loss = loss_c + gradient_penalty
@@ -80,9 +91,8 @@ class WGAN_GP(BaseGAN):
 
     def _compute_gp(self, real_data, fake_data):
         batch_size = real_data.size(0)
-        eps = torch.rand(batch_size, 1, 1, 1).to(real_data.device())
+        eps = torch.rand(batch_size, 1, 1, 1).to(real_data.device)
         eps = eps.expand_as(real_data)
-
         interpolation = eps * real_data + (1 - eps) * fake_data
 
         interp_logits = self.netD(interpolation)
