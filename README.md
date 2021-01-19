@@ -9,8 +9,7 @@ A zoo of GAN implementations.
 ## 0. Models
 - [ ] DCGAN
 - [ ] WGAN
-- [x] WGAN-GP
-
+- [x] [WGAN-GP](https://arxiv.org/pdf/1704.00028.pdf)
 ## 1. Install dependencies
 `pip install -r requirements.txt`
 
