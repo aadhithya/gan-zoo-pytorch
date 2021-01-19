@@ -16,8 +16,7 @@ lr:
   g: 1.0e-4
   d: 1.0e-4
 
-
 batch_size: 256
-epochs: 5
-viz_freq: 200
-ckpt_freq: 50
+epochs: 100
+viz_freq: 350
+ckpt_freq: 25
