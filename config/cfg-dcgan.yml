@@ -1,0 +1,20 @@
+name: DCGAN
+
+seed: 42
+device: cuda
+
+data_dir: /home/ubuntu/pytorch-gan-zoo/.data/img_align_celeba
+
+z_dim: 128
+imsize: 64
+img_ch: 3
+
+
+lr:
+  g: 1.0e-4
+  d: 1.0e-4
+
+batch_size: 256
+epochs: 100
+viz_freq: 350
+ckpt_freq: 25
