@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.optim import Adam
+from torch.optim import RMSprop
 from torch import autograd
 
 import os
@@ -27,8 +27,7 @@ class WGAN(BaseGAN):
             norm_layer=nn.BatchNorm2d,
             final_activation=torch.tanh,
         )
-        self.netD = NetD(self.cfg.img_ch, norm_layer=nn.BatchNorm2d)
-
+        self.netD = NetD(self.cfg.img_ch, norm_layer=nn.InstanceNorm2d)
         self.netG.apply(init_weight)
         self.netD.apply(init_weight)
 
@@ -41,8 +40,8 @@ class WGAN(BaseGAN):
         self.netG = self.netG.to(self.cfg.device)
         self.netD = self.netD.to(self.cfg.device)
 
-        self.optG = Adam(self.netG.parameters(), lr=self.cfg.lr.g)
-        self.optD = Adam(self.netD.parameters(), lr=self.cfg.lr.d)
+        self.optG = RMSprop(self.netG.parameters(), lr=self.cfg.lr.g)
+        self.optD = RMSprop(self.netD.parameters(), lr=self.cfg.lr.d)
 
     def generator_step(self, data):
         self.netG.train()
@@ -77,9 +76,9 @@ class WGAN(BaseGAN):
         real_logits = self.netD(real_images)
         fake_logits = self.netD(fake_images)
 
-        loss = fake_logits.mean() - real_logits.mean()
+        loss = -(real_logits.mean() - fake_logits.mean())
 
-        loss.backward()
+        loss.backward(retain_graph=True)
         self.optD.step()
 
         # * Gradient clippling

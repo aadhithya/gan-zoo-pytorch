@@ -21,7 +21,7 @@ class BaseGAN:
         """
         super().__init__()
         self.cfg = cfg
-        self.n_critic = 1 if self.cfg.n_critic is None else self.cfg.n_Critic
+        self.n_critic = 1 if self.cfg.n_critic is None else self.cfg.n_critic
 
         self.writer = writer
         self.train_step = 0

@@ -64,15 +64,15 @@ class NetD(nn.Module):
             nn.LeakyReLU(0.2),
             # * 32x32
             nn.Conv2d(64, 128, 4, 2, 1, bias=False),
-            norm_layer(128),
+            norm_layer(128, affine=True),
             nn.LeakyReLU(0.2),
             # * 16x16
             nn.Conv2d(128, 256, 4, 2, 1, bias=False),
-            norm_layer(256),
+            norm_layer(256, affine=True),
             nn.LeakyReLU(0.2),
             # * 8x8
             nn.Conv2d(256, 512, 4, 2, 1, bias=False),
-            norm_layer(512),
+            norm_layer(512, affine=True),
             nn.LeakyReLU(0.2),
             # * 4x4
             nn.Conv2d(512, 1, 4, 1, 0, bias=False),
