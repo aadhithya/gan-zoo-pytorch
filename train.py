@@ -6,6 +6,7 @@ from utils.log import log
 from base.trainer import Trainer
 from models.wgan_gp import WGAN_GP
 from models.wgan import WGAN
+from models.dcgan import DCGAN
 
 from app import app
 
@@ -32,7 +33,7 @@ def wgan(cfg_path: str = "./config/config.yml"):
 @app.command()
 def dcgan(cfg_path: str = "./config/config.yml"):
     log.info("DCGAN selected for training...")
-    log.error("DCGAN not supported yet! Exiting...")
+    start_train_session(DCGAN, cfg_path)
 
 
 if __name__ == "__main__":

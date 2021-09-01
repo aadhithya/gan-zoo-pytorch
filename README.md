@@ -8,7 +8,7 @@ A zoo of GAN implementations.
 
 ## 0. Models
 - [ ] [DCGAN](https://arxiv.org/pdf/1511.06434.pdf)
-- [ ] [WGAN](https://arxiv.org/pdf/1701.07875.pdf)
+- [x] [WGAN](https://arxiv.org/pdf/1701.07875.pdf)
 - [x] [WGAN-GP](https://arxiv.org/pdf/1704.00028.pdf)
 ## 1. Install dependencies
 `pip install -r requirements.txt`
@@ -25,7 +25,7 @@ A zoo of GAN implementations.
 - supported models:
   1. `wgan`: Wasserstein GAN with gradient clipping.
   2. `wgan-gp`: WGAN with gradient penalty.
-  <!-- 3. `dcgan`: DCGAN -->
+  3. `dcgan`: DCGAN
 - for help, run
 
   `python train.py --help`

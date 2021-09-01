@@ -25,13 +25,13 @@ class Trainer:
 
         self.__init_writer()
 
-        transforms = tf.Compose(
-            [
-                tf.ToTensor(),
-                tf.Normalize(0.5, 0.5),
-                tf.Resize((self.cfg.imsize, self.cfg.imsize)),
-            ]
-        )
+        tf_list = [
+            tf.ToTensor(),
+            tf.Normalize(0.5, 0.5),
+            tf.Resize((self.cfg.imsize, self.cfg.imsize)),
+        ]
+
+        transforms = tf.Compose(tf_list)
 
         self.dataset = ImageFolder(
             root=self.cfg.data_dir, transform=transforms

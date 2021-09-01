@@ -25,12 +25,19 @@ class DCGAN(BaseGAN):
             norm_layer=nn.BatchNorm2d,
             final_activation=torch.tanh,
         )
-        self.netD = NetD(self.cfg.img_ch, norm_layer=nn.BatchNorm2d)
+        self.netD = NetD(
+            self.cfg.img_ch,
+            norm_layer=nn.BatchNorm2d,
+            final_activation=torch.sigmoid,
+        )
+
+        self.netG.apply(init_weight)
+        self.netD.apply(init_weight)
 
         # * DCGAN Alternating optimization
         self.n_critic = 1
 
-        self.bce_loss = nn.BCEWithLogitsLoss()
+        self.bce_loss = nn.BCELoss()
 
         self._update_model_optimizers()
 
@@ -38,20 +45,22 @@ class DCGAN(BaseGAN):
         self.netG = self.netG.to(self.cfg.device)
         self.netD = self.netD.to(self.cfg.device)
 
-        self.optG = Adam(self.netG.parameters(), lr=self.cfg.lr.g)
-        self.optD = Adam(self.netD.parameters(), lr=self.cfg.lr.d)
+        self.optG = Adam(
+            self.netG.parameters(), lr=self.cfg.lr.g, betas=(0.5, 0.999)
+        )
+        self.optD = Adam(
+            self.netD.parameters(), lr=self.cfg.lr.d, betas=(0.5, 0.999)
+        )
+
+        self.netG.train()
+        self.netD.train()
 
     def generator_step(self, data):
-        self.netG.train()
-        self.netD.eval()
-
         self.optG.zero_grad()
 
-        noise = self.sample_noise()
+        # noise = self.sample_noise()
 
-        fake_images = self.netG(noise)
-
-        fake_logits = self.netD(fake_images)
+        fake_logits = self.netD(self.fake_images)
 
         loss = self.bce_loss(fake_logits, torch.ones_like(fake_logits))
 
@@ -61,26 +70,22 @@ class DCGAN(BaseGAN):
         self.metrics["gen-loss"] += [loss.item()]
 
     def critic_step(self, data):
-        self.netG.eval()
-        self.netD.train()
-
         self.optD.zero_grad()
 
         real_images = data[0].float().to(self.cfg.device)
 
-        real_logits = self.netD(real_images)
+        real_logits = self.netD(real_images).view(-1)
         real_loss = self.bce_loss(real_logits, torch.ones_like(real_logits))
-        real_loss.backward()
 
         noise = self.sample_noise()
-        fake_images = self.netG(noise)
+        self.fake_images = self.netG(noise)
 
-        fake_logits = self.netD(fake_images)
+        fake_logits = self.netD(self.fake_images).view(-1)
         fake_loss = self.bce_loss(fake_logits, torch.zeros_like(fake_logits))
-        fake_loss.backward()
 
         loss = real_loss + fake_loss
 
+        loss.backward(retain_graph=True)
         self.optD.step()
 
         self.metrics["discriminator-loss"] += [loss.item()]

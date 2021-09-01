@@ -11,8 +11,8 @@ img_ch: 3
 
 
 lr:
-  g: 1.0e-4
-  d: 1.0e-4
+  g: 2.0e-4
+  d: 2.0e-4
 
 batch_size: 256
 epochs: 100
