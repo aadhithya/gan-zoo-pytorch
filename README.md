@@ -7,18 +7,32 @@
 A zoo of GAN implementations.
 
 ## 0. Models
-- [ ] DCGAN
-- [ ] WGAN
+- [ ] [DCGAN](https://arxiv.org/pdf/1511.06434.pdf)
+- [x] [WGAN](https://arxiv.org/pdf/1701.07875.pdf)
 - [x] [WGAN-GP](https://arxiv.org/pdf/1704.00028.pdf)
 ## 1. Install dependencies
 `pip install -r requirements.txt`
 
 ## 2. Train Model
+### 2.1 Datasets
 - currently uses `torchvision.datasets.ImageFolder` Dataset. Change `data_dir` parameter in `config.yml` to your custom dataset path.
 - Only 64x64 images supported.
-- only WGAN-GP supported for now.
 
-  `python train.py wgan-gp --config-dir path/to/config.yml`
+### 2.2 `train.py`
+- to start model training, run
+
+  `python train.py <model-name> --config-dir path/to/config.yml`
+- supported models:
+  1. `wgan`: Wasserstein GAN with gradient clipping.
+  2. `wgan-gp`: WGAN with gradient penalty.
+  3. `dcgan`: DCGAN
+- for help, run
+
+  `python train.py --help`
+- for model specific help, run
+
+  `python train.py <model_name> --help`
+
 
 ## 3. `config.yml`
 - Config file controls the model behaviour.

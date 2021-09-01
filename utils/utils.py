@@ -13,7 +13,7 @@ def load_config(cfg_path):
 
 
 def init_weight(m):
-    if isinstance(m, (nn.Linear, nn.Conv2d)):
+    if isinstance(m, (nn.Linear, nn.Conv2d, nn.ConvTranspose2d)):
         # nn.init.xavier_normal_(m.weight)
         # nn.init.kaiming_uniform_(m.weight)
         nn.init.normal_(m.weight, 0, 0.02)

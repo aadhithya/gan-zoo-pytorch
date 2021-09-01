@@ -12,6 +12,13 @@ from models.modules.layers import LayerNorm2d, PixelNorm
 
 
 class WGAN_GP(BaseGAN):
+    """
+    WGAN_GP Wasserstein GANs with Gradient Penalty.
+    Gets rid of gradient clipping from WGAN and uses
+    gradient clipping instead to enforce 1-Lipschitz
+    continuity. Everything else is the same as WGAN.
+    """
+
     def __init__(self, cfg, writer):
         super().__init__(cfg, writer)
 
@@ -36,13 +43,6 @@ class WGAN_GP(BaseGAN):
 
         self.optG = Adam(self.netG.parameters(), lr=self.cfg.lr.g)
         self.optD = Adam(self.netD.parameters(), lr=self.cfg.lr.d)
-
-    def generate_images(self, n_samples):
-        self.netG.eval()
-        with torch.no_grad():
-            noise = self.sample_noise()[:n_samples]
-            fake_images = self.netG(noise)
-        return fake_images
 
     def generator_step(self, data):
         self.netG.train()
@@ -111,10 +111,3 @@ class WGAN_GP(BaseGAN):
         gradients = gradients.view(batch_size, -1)
         grad_norm = gradients.norm(2, 1)
         return torch.mean((grad_norm - 1) ** 2)
-
-    def save_model(self, ckpt_dir: str, current_ep: int):
-        out_path = os.path.join(ckpt_dir, f"netG-{(current_ep+1):03d}.tar")
-        self._ckpt(self.netG, out_path)
-
-        out_path = os.path.join(ckpt_dir, f"netD-{(current_ep+1):03d}.tar")
-        self._ckpt(self.netD, out_path)

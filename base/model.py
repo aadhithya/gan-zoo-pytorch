@@ -4,6 +4,7 @@ import torch.nn as nn
 from torchvision.utils import make_grid
 from tensorboardX import SummaryWriter
 
+import os
 from tqdm import tqdm
 import numpy as np
 from collections import defaultdict
@@ -20,7 +21,7 @@ class BaseGAN:
         """
         super().__init__()
         self.cfg = cfg
-        self.n_critic = 1 if self.cfg.n_critic is None else self.cfg.n_Critic
+        self.n_critic = 1 if self.cfg.n_critic is None else self.cfg.n_critic
 
         self.writer = writer
         self.train_step = 0
@@ -29,9 +30,6 @@ class BaseGAN:
 
     def _update_model_optimizers(self):
         pass
-
-    def generate_images(self, n_samples=16):
-        raise NotImplementedError("method not implemented!")
 
     def generator_step(self, data):
         raise NotImplementedError("method not implemented!")
@@ -98,8 +96,19 @@ class BaseGAN:
 
         return
 
-    def save_model(self, ckpt_dir, current_ep):
-        pass
+    def generate_images(self, n_samples):
+        self.netG.eval()
+        with torch.no_grad():
+            noise = self.sample_noise()[:n_samples]
+            fake_images = self.netG(noise)
+        return fake_images
+
+    def save_model(self, ckpt_dir: str, current_ep: int):
+        out_path = os.path.join(ckpt_dir, f"netG-{(current_ep+1):03d}.tar")
+        self._ckpt(self.netG, out_path)
+
+        out_path = os.path.join(ckpt_dir, f"netD-{(current_ep+1):03d}.tar")
+        self._ckpt(self.netD, out_path)
 
     def _ckpt(self, model, path):
         """
