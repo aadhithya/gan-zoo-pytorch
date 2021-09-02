@@ -54,7 +54,8 @@ class WGAN(BaseGAN):
         fake_images = self.netG(noise)
 
         fake_logits = self.netD(fake_images)
-
+       
+        # * min E_{x~P_X}[C(x)] - E_{Z~P_Z}[C(g(z))]
         loss = -fake_logits.mean().view(-1)
 
         loss.backward()
@@ -76,6 +77,7 @@ class WGAN(BaseGAN):
         real_logits = self.netD(real_images)
         fake_logits = self.netD(fake_images)
 
+        # * max E_{x~P_X}[C(x)] - E_{Z~P_Z}[C(g(z))]
         loss = -(real_logits.mean() - fake_logits.mean())
 
         loss.backward(retain_graph=True)
