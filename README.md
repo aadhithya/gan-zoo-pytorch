@@ -7,7 +7,7 @@
 A zoo of GAN implementations.
 
 ## 0. Models
-- [ ] [DCGAN](https://arxiv.org/pdf/1511.06434.pdf)
+- [x] [DCGAN](https://arxiv.org/pdf/1511.06434.pdf)
 - [x] [WGAN](https://arxiv.org/pdf/1701.07875.pdf)
 - [x] [WGAN-GP](https://arxiv.org/pdf/1704.00028.pdf)
 ## 1. Install dependencies
