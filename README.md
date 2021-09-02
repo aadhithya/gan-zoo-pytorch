@@ -61,6 +61,9 @@ lr:
 ```
 
 ## 4. Sample Outpouts
+
+**NOTE:** Models not trained to convergence!!
+
 - DCGAN
 
 ![Screenshot 2021-09-01 at 18 36 33](https://user-images.githubusercontent.com/6749212/131802724-ae1489bd-5e4b-483e-8473-bf4cbf873192.png)
