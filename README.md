@@ -60,6 +60,18 @@ lr:
   d: <float> learning rate for discriminator/critic.
 ```
 
+## 4. Sample Outpouts
+- DCGAN
+![Screenshot 2021-09-01 at 18 36 33](https://user-images.githubusercontent.com/6749212/131802724-ae1489bd-5e4b-483e-8473-bf4cbf873192.png)
+
+- WGAN
+![Screenshot 2021-08-31 at 21 54 32](https://user-images.githubusercontent.com/6749212/131802784-0192eea8-592e-4a9c-b89c-1f45651f41e7.png)
+
+- WGAN-GP
+![Screenshot 2021-08-31 at 20 53 51](https://user-images.githubusercontent.com/6749212/131802831-b8baf889-0c1a-4964-9a4c-08878908bac9.png)
+
+
+
 
 ## To-Do
 - [ ] Model Checkpointing (Save/Load).
